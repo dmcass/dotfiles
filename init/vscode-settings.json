@@ -1,0 +1,59 @@
+{
+    "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 11,
+    "editor.renderWhitespace": "selection",
+    "editor.rulers": [120],
+    "editor.scrollBeyondLastLine": false,
+    "editor.showUnused": true,
+    "editor.suggestSelection": "first",
+    "editor.tabSize": 2,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.openEditors.visible": 0,
+    "files.associations": {
+      "tslint.json": "jsonc"
+    },
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/bower_components": true,
+      "**/node_modules": true
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "gitlens.advanced.messages": {
+      "suppressShowKeyBindingsNotice": true
+    },
+    "gitlens.codeLens.authors.enabled": false,
+    "gitlens.codeLens.recentChange.enabled": false,
+    "html.format.enable": false,
+    "java.errors.incompleteClasspath.severity": "ignore",
+    "javascript.format.enable": false,
+    "json.format.enable": false,
+    "search.globalFindClipboard": true,
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
+    "terminal.integrated.fontSize": 11,
+    "typescript.format.enable": false,
+    "typescript.tsdk": "/usr/local/lib/node_modules/typescript/lib",
+    "typescript.updateImportsOnFileMove.enabled": "never",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "window.newWindowDimensions": "inherit",
+    "window.restoreWindows": "all",
+    "workbench.colorCustomizations": {
+      "editorIndentGuide.background": "#282a2e",
+      "editorIndentGuide.activeBackground": "#373b41"
+    },
+    "workbench.tips.enabled": false,
+    "python.jediEnabled": false,
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.colorTheme": "Base16 Tomorrow Night Dark",
+    "vsicons.dontShowNewVersionMessage": true,
+    "window.zoomLevel": 0,
+    "javascript.updateImportsOnFileMove.enabled": "never"
+  }

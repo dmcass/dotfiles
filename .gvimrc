@@ -1,8 +1,9 @@
-" Use the Solarized Dark theme
+" Use the Tomorrow Night theme
 set background=dark
-colorscheme solarized
-" Use 14pt Monaco
-set guifont=Monaco:h14
+colorscheme base16-tomorrow-night
+" Use 12pt Fira Code
+set macligatures
+set guifont=Fira\ Code:h12
 " Don’t blink cursor in normal mode
 set guicursor=n:blinkon0
 " Better line-height

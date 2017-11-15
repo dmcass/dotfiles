@@ -32,3 +32,6 @@ export MANPAGER='less -X';
 # Avoid issues with `gpg` as installed via Homebrew.
 # https://stackoverflow.com/a/42265848/96656
 export GPG_TTY=$(tty);
+
+# React native JS debugger
+export REACT_DEBUGGER="open -g 'rndebugger://set-debugger-loc?host=localhost&port=8081' ||"
