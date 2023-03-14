@@ -33,5 +33,5 @@ export MANPAGER='less -X';
 # https://stackoverflow.com/a/42265848/96656
 export GPG_TTY=$(tty);
 
-# React native JS debugger
-export REACT_DEBUGGER="open -g 'rndebugger://set-debugger-loc?host=localhost&port=8081' ||"
+# Hide the “default interactive shell is now zsh” warning on macOS.
+export BASH_SILENCE_DEPRECATION_WARNING=1;
