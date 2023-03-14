@@ -83,7 +83,7 @@ if [[ $COLORTERM =~ ^(truecolor|24bit)$ ]]; then
     green="$base0B";
     cyan="$base0C";
     blue="$base0D";
-    purple="$base0E";
+    magenta="$base0E";
     brown="$base0F";
     white="$base07";
 elif tput setaf 1 &> /dev/null; then
@@ -97,7 +97,7 @@ elif tput setaf 1 &> /dev/null; then
     green=$(tput setaf 2);
     cyan=$(tput setaf 6);
     blue=$(tput setaf 4);
-    purple=$(tput setaf 5);
+    magenta=$(tput setaf 5);
     brown=$(tput setaf 14);
     white=$(tput setaf 15);
 else
@@ -110,7 +110,7 @@ else
     green="\e[32m";
     cyan="\e[36m";
     blue="\e[34m";
-    purple="\e[35m";
+    magenta="\e[35m";
     brown="\e[96m;"
     white="\e[37m";
 fi;
@@ -137,7 +137,7 @@ PS1+="\[${white}\] at ";
 PS1+="\[${hostStyle}\]\h"; # host
 PS1+="\[${white}\] in ";
 PS1+="\[${green}\]\w"; # working directory full path
-PS1+="\$(prompt_git \"\[${white}\] on \[${purple}\]\" \"\[${blue}\]\")"; # Git repository details
+PS1+="\$(prompt_git \"\[${white}\] on \[${magenta}\]\" \"\[${blue}\]\")"; # Git repository details
 PS1+="\n";
 PS1+="\[${white}\]\$ \[${reset}\]"; # `$` (and reset color)
 export PS1;

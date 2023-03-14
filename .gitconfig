@@ -1,7 +1,10 @@
 [alias]
 
-    # View abbreviated SHA, description, and history graph of the latest 20 commits.
+    # View GPG signature status, abbreviated SHA, description, and history graph of the latest 20 commits.
     l = log --pretty=format:'%C(magenta)%G? %C(auto)%h %d %s' -n 20 --graph --abbrev-commit
+
+    # View abbreviated SHA, description, and history graph of the latest 20 commits.
+    lo = log --pretty=oneline -n 20 --graph --abrev-commit
 
     # View the current working tree status using the short format.
     s = status -s
@@ -25,10 +28,13 @@
     ca = !git add -A && git commit -av
 
     # Switch to a branch, creating it if necessary.
-    go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+    go = "!f() { git switch -c \"$1\" 2> /dev/null || git switch \"$1\"; }; f"
 
-    # Checkout.
-    co = checkout
+    # Shorthand command for checkout. Warns about using checkout instead of switch.
+    co = "!f() { git checkout \"$@\"; echo \"\n $(tput setaf 1)Should you be using 'switch' or 'restore' instead?\"; }; f"
+
+    # Shorthand command for switch.
+    sw = switch
 
     # Show verbose output about tags, branches or remotes.
     tags = tag -l
@@ -95,11 +101,11 @@
 
     # Make `git rebase` safer on macOS.
     # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-    trustctime = false
+    trustCtime = false
 
     # Prevent showing files whose names contain non-ASCII symbols as unversioned.
     # http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
-    precomposeunicode = false
+    precomposeUnicode = false
 
     # Speed up commands involving untracked files such as `git status`.
     # https://git-scm.com/docs/git-update-index#_untracked_cache
@@ -136,7 +142,7 @@
 [commit]
 
     # https://help.github.com/articles/signing-commits-using-gpg/
-    gpgsign = true
+    gpgSign = true
 
 [diff]
 
@@ -158,12 +164,32 @@
     # Include summaries of merged commits in newly created merge commit messages.
     log = true
 
+    # Default to creating a merge commit when merging branches
+    ff = no
+
+[fetch]
+
+    # Always prune branches and tags that have been deleted on remotes.
+    prune = true
+
+[pull]
+
+    # Set default pull strategy to rebase local branch on top of remote changes.
+    rebase = true
+
+    # Prefer fast-forward merges when pulling with merge strategy
+    ff = yes
+
 [push]
 
     # https://git-scm.com/docs/git-config#git-config-pushdefault
     default = simple
     # Make `git push` push relevant annotated tags when pushing branches out.
     followTags = true
+
+[gpg]
+
+    program = /usr/local/bin/gpg
 
 # URL shorthands
 

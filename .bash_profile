@@ -26,17 +26,29 @@ for option in autocd globstar; do
 done;
 
 # Add tab completion for many Bash commands
-if which brew &> /dev/null && [ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]; then
-    # Ensure existing Homebrew v1 completions continue to work
-    export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d";
-    source "$(brew --prefix)/etc/profile.d/bash_completion.sh";
+if type brew &>/dev/null; then
+    HOMBREW_PREFIX="$(brew --prefix)"
+    ASDF_PREFIX="$(brew --prefix asdf)"
+
+    if [[ -r "${ASDF_PREFIX}/libexec/asdf.sh" ]]; then
+        # Initialize asdf on startup
+        source "${ASDF_PREFIX}/libexec/asdf.sh"
+    fi;
+
+    if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
+        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+    else
+        for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+            [[ -r "${COMPLETION}" ]] && source "${COMPLETION}"
+        done;
+    fi;
 elif [ -f /etc/bash_completion ]; then
     source /etc/bash_completion;
 fi;
 
 # Enable tab completion for `g` by marking it as an alias for `git`
-if type _git &> /dev/null; then
-    complete -o default -o nospace -F _git g;
+if type __git_complete &> /dev/null; then
+    __git_complete g __git_main;
 fi;
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
