@@ -74,5 +74,18 @@ brew install zopfli
 # Install asdf
 brew install asdf
 
+# Install GPG Pin Entry app
+brew install --cask gpg-suite-pinentry
+
+# Install xcodes for XCode version management
+brew install aria2
+brew install robotsandpencils/made/xcodes
+
+# Install Flipper
+brew install --cask flipper
+
+# Install updated version of rsync
+brew install rsync
+
 # Remove outdated versions from the cellar.
 brew cleanup
