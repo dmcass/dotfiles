@@ -169,3 +169,9 @@ function o() {
 function tre() {
     tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
 }
+
+# Utility script that generates gitignore files from defaults defined in https://github.com/github/gitignore
+# See https://gitignore.io for docs
+function gi() {
+    curl -sL https://www.toptal.com/developers/gitignore/api/$@;
+}

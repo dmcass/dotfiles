@@ -24,8 +24,8 @@
     # Clone a repository including all submodules.
     c = clone --recursive
 
-	# Commit all changes.
-	ca = !git add ':(exclude,attr:builtin_objectmode=160000)' && git commit -av
+    # Commit all changes.
+    ca = !git add ':(exclude,attr:builtin_objectmode=160000)' && git commit -av
 
     # Switch to a branch, creating it if necessary.
     go = "!f() { git switch -c \"$1\" 2> /dev/null || git switch \"$1\"; }; f"

@@ -71,8 +71,8 @@ brew install tree
 brew install vbindiff
 brew install zopfli
 
-# Install asdf
-brew install asdf
+# Install mise
+brew install mise
 
 # Install GPG Pin Entry app
 brew install --cask gpg-suite-pinentry

@@ -27,15 +27,11 @@ for option in autocd globstar; do
     shopt -s "$option" 2> /dev/null;
 done;
 
+eval "$(mise activate bash)"
+
 # Add tab completion for many Bash commands
 if type brew &>/dev/null; then
     HOMBREW_PREFIX="$(brew --prefix)"
-    ASDF_PREFIX="$(brew --prefix asdf)"
-
-    if [[ -r "${ASDF_PREFIX}/libexec/asdf.sh" ]]; then
-        # Initialize asdf on startup
-        source "${ASDF_PREFIX}/libexec/asdf.sh"
-    fi;
 
     if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
         source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"

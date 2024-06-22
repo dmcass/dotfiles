@@ -1,4 +1,8 @@
 {
+    "base16.generator.activatedThemes": [
+        "base16-tomorrow-light",
+        "base16-tomorrow-night-dark"
+    ],
     "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
     "editor.fontLigatures": true,
     "editor.fontSize": 11,
@@ -7,53 +11,109 @@
     "editor.scrollBeyondLastLine": false,
     "editor.showUnused": true,
     "editor.suggestSelection": "first",
-    "editor.tabSize": 2,
+    "editor.tabSize": 4,
+    "editor.unicodeHighlight.includeStrings": false,
+    "eslint.quiet": false,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
-    "explorer.openEditors.visible": 0,
     "files.associations": {
-      "tslint.json": "jsonc"
+        ".huskyrc": "jsonc",
+        ".lintstagedrc": "jsonc",
+        "tslint.json": "jsonc"
     },
     "files.exclude": {
-      "**/.git": true,
-      "**/.svn": true,
-      "**/.hg": true,
-      "**/CVS": true,
-      "**/.DS_Store": true,
-      "**/bower_components": true,
-      "**/node_modules": true
+        "**/.classpath": true,
+        "**/.DS_Store": true,
+        "**/.factorypath": true,
+        "**/.git": true,
+        "**/.hg": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.svn": true,
+        "**/bower_components": true,
+        "**/CVS": true,
+        "**/node_modules": true
     },
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
-    "gitlens.advanced.messages": {
-      "suppressShowKeyBindingsNotice": true
-    },
-    "gitlens.codeLens.authors.enabled": false,
+    "git.mergeEditor": false,
     "gitlens.codeLens.recentChange.enabled": false,
+    "gitlens.codeLens.authors.enabled": false,
+    "gitlens.codeLens.scopes": ["document", "containers", "blocks"],
     "html.format.enable": false,
     "java.errors.incompleteClasspath.severity": "ignore",
     "javascript.format.enable": false,
+    "javascript.updateImportsOnFileMove.enabled": "never",
+    "jest.runMode": "deferred",
     "json.format.enable": false,
+    "react-native-tools.showUserTips": false,
+    "redhat.telemetry.enabled": false,
     "search.globalFindClipboard": true,
-    "telemetry.enableCrashReporter": false,
-    "telemetry.enableTelemetry": false,
     "terminal.integrated.fontSize": 11,
     "typescript.format.enable": false,
-    "typescript.tsdk": "/usr/local/lib/node_modules/typescript/lib",
+    "typescript.tsdk": "~/.local/share/rtx/installs/node/lts-iron/lib/node_modules/typescript/lib",
     "typescript.updateImportsOnFileMove.enabled": "never",
+    "vsicons.dontShowNewVersionMessage": true,
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "window.newWindowDimensions": "inherit",
     "window.restoreWindows": "all",
-    "workbench.colorCustomizations": {
-      "editorIndentGuide.background": "#282a2e",
-      "editorIndentGuide.activeBackground": "#373b41"
-    },
-    "workbench.tips.enabled": false,
-    "python.jediEnabled": false,
-    "workbench.iconTheme": "vscode-icons",
-    "workbench.colorTheme": "Base16 Tomorrow Night Dark",
-    "vsicons.dontShowNewVersionMessage": true,
     "window.zoomLevel": 0,
-    "javascript.updateImportsOnFileMove.enabled": "never"
-  }
+    "workbench.colorCustomizations": {
+        "[Base16 Tomorrow Night Dark]": {
+            "editorIndentGuide.background1": "#282a2e",
+            "editorIndentGuide.activeBackground1": "#373b41",
+            "editorBracketHighlight.foreground1": "#e7c547",
+            "editorBracketHighlight.foreground2": "#c397d8",
+            "editorBracketHighlight.foreground3": "#7aa6da",
+            "editorBracketHighlight.foreground4": "#e78c45",
+            "editorBracketHighlight.foreground5": "#b9ca4a",
+            "editorBracketHighlight.foreground6": "#70c0b1",
+            "editorBracketMatch.background": "#000000",
+            "editorBracketHighlight.unexpectedBracket.foreground": "#d54e53"
+        }
+    },
+    "workbench.colorTheme": "Base16 Tomorrow Night Dark",
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.preferredDarkColorTheme": "Base16 Tomorrow Night Dark",
+    "workbench.preferredLightColorTheme": "Base16 Tomorrow Light",
+    "workbench.tips.enabled": false,
+    "yaml.customTags": [
+        "!And",
+        "!And sequence",
+        "!If",
+        "!If sequence",
+        "!Not",
+        "!Not sequence",
+        "!Equals",
+        "!Equals sequence",
+        "!Or",
+        "!Or sequence",
+        "!FindInMap",
+        "!FindInMap sequence",
+        "!Base64",
+        "!Join",
+        "!Join sequence",
+        "!Cidr",
+        "!Ref",
+        "!Sub",
+        "!Sub sequence",
+        "!GetAtt",
+        "!GetAZs",
+        "!ImportValue",
+        "!ImportValue sequence",
+        "!Select",
+        "!Select sequence",
+        "!Split",
+        "!Split sequence"
+    ],
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    },
+    "[python]": {
+        "editor.formatOnType": true
+    }
+}
