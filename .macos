@@ -2,9 +2,12 @@
 
 # ~/.macos — https://mths.be/macos
 
-# Close any open System Preferences panes, to prevent them from overriding
-# settings we’re about to change
-osascript -e 'tell application "System Preferences" to quit'
+# The repository folder, for the theme files in init/
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Close System Settings, to prevent it from overriding settings we’re about
+# to change
+osascript -e 'tell application "System Settings" to quit'
 
 # Ask for the administrator password upfront
 sudo -v
@@ -12,15 +15,27 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# Settings for sandboxed apps (Safari, Mail, TextEdit) live in
+# ~/Library/Containers, which macOS protects. If the terminal can't read it,
+# the `defaults write` lines for those apps are unlikely to apply.
+if ! ls ~/Library/Containers/com.apple.Safari/Data/Library/Preferences &>/dev/null; then
+    echo "Warning: this terminal can't access app containers, so Safari, Mail, and TextEdit settings may not apply." >&2
+    echo "Grant it in System Settings → Privacy & Security → Full Disk Access, then run ./.macos again." >&2
+fi
+
 ###############################################################################
 # General UI/UX                                                               #
 ###############################################################################
 
-# Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "catspaw"
-sudo scutil --set HostName "catspaw"
-sudo scutil --set LocalHostName "catspaw"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "catspaw"
+# Set computer name (as done via System Settings → General → Sharing), only
+# when one is given: ./.macos <computer-name>
+COMPUTER_NAME="${1:-}"
+if [ -n "$COMPUTER_NAME" ]; then
+    sudo scutil --set ComputerName "$COMPUTER_NAME"
+    sudo scutil --set HostName "$COMPUTER_NAME"
+    sudo scutil --set LocalHostName "$COMPUTER_NAME"
+    sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+fi
 
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
@@ -34,8 +49,8 @@ sudo nvram SystemAudioVolume=" "
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
 
-# Always show scrollbars
-defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+# Show scrollbars only while scrolling
+defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
 # Possible values: `WhenScrolling`, `Automatic` and `Always`
 
 # Disable the over-the-top focus ring animation
@@ -175,9 +190,6 @@ defaults write NSGlobalDomain AppleMetricUnits -bool false
 # Set the timezone; see `sudo systemsetup -listtimezones` for other values
 sudo systemsetup -settimezone "America/Los_Angeles" > /dev/null
 
-# Stop iTunes from responding to the keyboard media keys
-launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null
-
 ###############################################################################
 # Energy saving                                                               #
 ###############################################################################
@@ -219,48 +231,6 @@ sudo pmset -a hibernatemode 0
 # sudo touch /private/var/vm/sleepimage
 # …and make sure it can’t be rewritten
 # sudo chflags uchg /private/var/vm/sleepimage
-
-###############################################################################
-# Energy saving                                                               #
-###############################################################################
-
-# Enable lid wakeup
-sudo pmset -a lidwake 1
-
-# Restart automatically on power loss
-sudo pmset -a autorestart 1
-
-# Restart automatically if the computer freezes
-sudo systemsetup -setrestartfreeze on
-
-# Sleep the display after 15 minutes
-sudo pmset -a displaysleep 15
-
-# Disable machine sleep while charging
-sudo pmset -c sleep 0
-
-# Set machine sleep to 5 minutes on battery
-sudo pmset -b displaysleep 5
-sudo pmset -b sleep 5
-
-# Set standby delay to 24 hours (default is 1 hour)
-sudo pmset -a standbydelay 86400
-
-# Never go into computer sleep mode
-sudo systemsetup -setcomputersleep Off > /dev/null
-
-# Hibernation mode
-# 0: Disable hibernation (speeds up entering sleep mode)
-# 3: Copy RAM to disk so the system state can still be restored in case of a
-#    power failure.
-sudo pmset -a hibernatemode 0
-
-# Remove the sleep image file to save disk space
-sudo rm /private/var/vm/sleepimage
-# Create a zero-byte file instead…
-sudo touch /private/var/vm/sleepimage
-# …and make sure it can’t be rewritten
-sudo chflags uchg /private/var/vm/sleepimage
 
 ###############################################################################
 # Screen                                                                      #
@@ -402,7 +372,7 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
     Privileges -bool true
 
 ###############################################################################
-# Dock, Dashboard, and hot corners                                            #
+# Dock and hot corners                                                        #
 ###############################################################################
 
 # Enable highlight hover effect for the grid view of a stack (Dock)
@@ -440,12 +410,6 @@ defaults write com.apple.dock expose-animation-duration -float 0.1
 # Don’t group windows by application in Mission Control
 # (i.e. use the old Exposé behavior instead)
 defaults write com.apple.dock expose-group-by-app -bool false
-
-# Disable Dashboard
-defaults write com.apple.dashboard mcx-disabled -bool true
-
-# Don’t show Dashboard as a Space
-defaults write com.apple.dock dashboard-in-overlay -bool true
 
 # Don’t automatically rearrange Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
@@ -487,7 +451,6 @@ sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (
 #  4: Desktop
 #  5: Start screen saver
 #  6: Disable screen saver
-#  7: Dashboard
 # 10: Put display to sleep
 # 11: Launchpad
 # 12: Notification Center
@@ -501,8 +464,8 @@ defaults write com.apple.dock wvous-tr-modifier -int 0
 # Bottom left screen corner → Start screen saver
 defaults write com.apple.dock wvous-bl-corner -int 5
 defaults write com.apple.dock wvous-bl-modifier -int 0
-# Bottom right screen corner → Start screen saver
-defaults write com.apple.dock wvous-br-corner -int 5
+# Bottom right screen corner → Lock Screen
+defaults write com.apple.dock wvous-br-corner -int 13
 defaults write com.apple.dock wvous-br-modifier -int 0
 
 ###############################################################################
@@ -569,15 +532,6 @@ defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
 # Warn about fraudulent websites
 defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 
-# Disable plug-ins
-defaults write com.apple.Safari WebKitPluginsEnabled -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled -bool false
-
-# Disable Java
-defaults write com.apple.Safari WebKitJavaEnabled -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles -bool false
-
 # Block pop-up windows
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
@@ -587,9 +541,6 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 # defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
 # defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
 # defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
-
-# Enable “Do Not Track”
-defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 
 # Update extensions automatically
 defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
@@ -690,7 +641,7 @@ tell application "Terminal"
     (* Open the custom theme so that it gets added to the list
        of available terminal themes (note: this will open two
        additional terminal windows). *)
-    do shell script "open '$HOME/init/" & themeName & ".terminal'"
+    do shell script "open '${DOTFILES}/init/" & themeName & ".terminal'"
 
     (* Wait a little bit to ensure that the custom theme is added. *)
     delay 1
@@ -724,7 +675,6 @@ EOD
 # Enable “focus follows mouse” for Terminal.app and all X11 apps
 # i.e. hover over a window and start typing in it without clicking first
 defaults write com.apple.terminal FocusFollowsMouse -bool true
-defaults write org.x.X11 wm_ffm -bool true
 
 # Enable Secure Keyboard Entry in Terminal.app
 # See: https://security.stackexchange.com/a/47786/8918
@@ -733,11 +683,9 @@ defaults write com.apple.terminal SecureKeyboardEntry -bool true
 # Disable the annoying line marks
 defaults write com.apple.Terminal ShowLineMarks -int 0
 
-# Install the Tomorrow Night theme for iTerm
-open "${HOME}/init/Tomorrow Night.itermcolors"
-
-# Don’t display the annoying prompt when quitting iTerm
-defaults write com.googlecode.iterm2 PromptOnQuit -bool false
+# Load iTerm2 settings (profiles, color presets, hotkey window) from
+# init/iterm2.plist. Save changes back with init/iterm2-export.sh.
+"${DOTFILES}/init/iterm2-import.sh"
 
 ###############################################################################
 # Time Machine                                                                #
@@ -753,31 +701,25 @@ defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 # Activity Monitor                                                            #
 ###############################################################################
 
-# Show the main window when launching Activity Monitor
-defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+# Don’t open the main window when launching Activity Monitor
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool false
 
 # Visualize CPU usage in the Activity Monitor Dock icon
 defaults write com.apple.ActivityMonitor IconType -int 5
 
-# Show all processes in Activity Monitor
-defaults write com.apple.ActivityMonitor ShowCategory -int 0
+# Activity Monitor’s process filter (View menu), as set on this Mac
+defaults write com.apple.ActivityMonitor ShowCategory -int 100
 
 # Sort Activity Monitor results by CPU usage
 defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
 
 ###############################################################################
-# Address Book, Dashboard, iCal, TextEdit, and Disk Utility                   #
+# Contacts, TextEdit, and Disk Utility                                        #
 ###############################################################################
 
-# Enable the debug menu in Address Book
+# Enable the debug menu in Contacts
 defaults write com.apple.addressbook ABShowDebugMenu -bool true
-
-# Enable Dashboard dev mode (allows keeping widgets on the desktop)
-defaults write com.apple.dashboard devmode -bool true
-
-# Enable the debug menu in iCal (pre-10.8)
-defaults write com.apple.iCal IncludeDebugMenu -bool true
 
 # Use plain text mode for new TextEdit documents
 defaults write com.apple.TextEdit RichText -int 0
@@ -844,39 +786,20 @@ defaults write com.apple.messageshelper.MessageController SOInputLineSettings -d
 defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false
 
 ###############################################################################
-# Google Chrome & Google Chrome Canary                                        #
+# Google Chrome                                                               #
 ###############################################################################
 
 # Disable the all too sensitive backswipe on trackpads
 defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
-defaults write com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls -bool false
 
 # Disable the all too sensitive backswipe on Magic Mouse
 defaults write com.google.Chrome AppleEnableMouseSwipeNavigateWithScrolls -bool false
-defaults write com.google.Chrome.canary AppleEnableMouseSwipeNavigateWithScrolls -bool false
 
 # Use the system-native print preview dialog
 defaults write com.google.Chrome DisablePrintPreview -bool true
-defaults write com.google.Chrome.canary DisablePrintPreview -bool true
 
 # Expand the print dialog by default
 defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
-defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true
-
-###############################################################################
-# GPGMail 2                                                                   #
-###############################################################################
-
-# Disable signing emails by default
-defaults write ~/Library/Preferences/org.gpgtools.gpgmail SignNewEmailsByDefault -bool false
-
-###############################################################################
-# Opera & Opera Developer                                                     #
-###############################################################################
-
-# Expand the print dialog by default
-defaults write com.operasoftware.Opera PMPrintingExpandedStateForPrint2 -boolean true
-defaults write com.operasoftware.OperaDeveloper PMPrintingExpandedStateForPrint2 -boolean true
 
 ###############################################################################
 # Divvy.app                                                                  #
@@ -892,7 +815,7 @@ defaults write com.mizage.Divvy enableAnimations -bool false
 # Rows/Columns
 defaults write com.mizage.Divvy defaultColumnCount -int 8
 defaults write com.mizage.Divvy defaultRowCount -int 6
-defaults write com.mizage.Divvy lasColumnCount -int 6
+defaults write com.mizage.Divvy lastColumnCount -int 6
 defaults write com.mizage.Divvy lastRowCount -int 6
 defaults write com.mizage.Divvy useDefaultGrid -bool true
 
@@ -900,55 +823,23 @@ defaults write com.mizage.Divvy useDefaultGrid -bool true
 defaults write com.mizage.Divvy shortcuts -data 62706c6973743030d40102030405068485582476657273696f6e58246f626a65637473592461726368697665725424746f7012000186a0af10160708162e2f363f40484951525a5b63646c6d76777f8055246e756c6cd2090a0b155a4e532e6f626a656374735624636c617373a90c0d0e0f10111213148002800580078009800b800d800f801180138015dd1718191a1b0a1c1d1e1f2021222324252627282927232b2c252d5873697a65526f77735f100f73656c656374696f6e456e64526f775f101173656c656374696f6e5374617274526f775a7375626469766964656456676c6f62616c5f101273656c656374696f6e456e64436f6c756d6e57656e61626c65645b73697a65436f6c756d6e73576e616d654b65795c6b6579436f6d626f436f64655f101473656c656374696f6e5374617274436f6c756d6e5d6b6579436f6d626f466c616773100610051000080980041002098003107b1200940000584c65667420312f32d2303132335a24636c6173736e616d655824636c61737365735853686f7274637574a234355853686f7274637574584e534f626a656374dd1718191a1b0a1c1d1e1f2021222324252627282427233b3c3d3e08098004098006107c1003120094000059526967687420312f32dd1718191a1b0a1c1d1e1f20212223243d2627282927234546254708098004098008107b12009c00005f100f426f74746f6d204c65667420312f34dd1718191a1b0a1c1d1e1f20212223243d2627282427234e4f3d500809800409800a107c12009c00005f1010426f74746f6d20526967687420312f34dd1718191a1b0a1c1d1e1f202122232925262728292723575825590809800409800c107b12009600005c546f70204c65667420312f34dd1718191a1b0a1c1d1e1f20212223292526272824272360613d620809800409800e107c12009600005d546f7020526967687420312f34dd1718191a1b0a1c1d1e1f202122233d25262728242723696a3d6b08098004098010101e12001600005d546f7020526967687420322f33dd1718191a1b0a1c1d1e1f20212223246e26272824272373743d75100408098004098012101e12001c00005f1010426f74746f6d20526967687420312f33dd1718191a1b0a1c1d1e1f2021222324252627282427237c7d257e08098004098014102e1200140000584d6178696d697a65d2303181825e4e534d757461626c654172726179a3818335574e5341727261795f100f4e534b657965644172636869766572d1868754726f6f74800100080011001a0023002d0032003700500056005b0066006d00770079007b007d007f00810083008500870089008b00a600af00c100d500e000e700fc0104011001180125013c014a014c014e0150015101520154015601570159015b01600169016e01790182018b018e019701a001bb01bc01bd01bf01c001c201c401c601cb01d501f001f101f201f401f501f701f901fe0210022b022c022d022f0230023202340239024c026702680269026b026c026e027002750282029d029e029f02a102a202a402a602ab02b902d402d502d602d802d902db02dd02e202f0030b030d030e030f0311031203140316031b032e0349034a034b034d034e0350035203570360036503740378038003920395039a000000000000020100000000000000880000000000000000000000000000039c
 
 ###############################################################################
-# VSCode                                                                      #
-###############################################################################
-
-# Install VSCode extensions
-code --install-extension dbaeumer.vscode-eslint
-code --install-extension eamodio.gitlens
-code --install-extension earshinov.sort-lines-by-selection
-code --install-extension EditorConfig.EditorConfig
-code --install-extension esbenp.prettier-vscode
-code --install-extension golf1052.base16-generator
-code --install-extension ms-python.python
-code --install-extension ms-vscode.vscode-typescript-tslint-plugin
-code --install-extension msjsdiag.debugger-for-chrome
-code --install-extension msjsdiag.vscode-react-native
-code --install-extension redhat.java
-code --install-extension VisualStudioExptTeam.vscodeintellicode
-code --install-extension vscjava.vscode-java-debug
-code --install-extension vscjava.vscode-java-dependency
-code --install-extension vscjava.vscode-java-pack
-code --install-extension vscjava.vscode-java-test
-code --install-extension vscjava.vscode-maven
-code --install-extension vscode-icons-team.vscode-icons
-
-# Install VSCode settings
-cp -r init/vscode-settings.json ~/Library/Application\ Support/Code/User/settings.json 2> /dev/null
-
-###############################################################################
 # Kill affected applications                                                  #
 ###############################################################################
 
 for app in "Activity Monitor" \
-    "Address Book" \
     "Calendar" \
     "cfprefsd" \
     "Contacts" \
     "Divvy" \
     "Dock" \
     "Finder" \
-    "Google Chrome Canary" \
     "Google Chrome" \
     "Mail" \
     "Messages" \
-    "Opera" \
     "Photos" \
     "Safari" \
     "SystemUIServer" \
-    "Terminal" \
-    "Twitter" \
-    "iCal"; do
+    "Terminal"; do
     killall "${app}" &> /dev/null
 done
 echo "Done. Note that some of these changes require a logout/restart to take effect."
