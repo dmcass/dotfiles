@@ -68,5 +68,5 @@ complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Music Safari System
 if [ -f ~/.atuin/bin/env ]; then
     source ~/.atuin/bin/env;
     [ -f "$HOMEBREW_PREFIX/etc/profile.d/bash-preexec.sh" ] && source "$HOMEBREW_PREFIX/etc/profile.d/bash-preexec.sh";
-    eval "$(atuin init bash)";
+    eval "$(atuin init bash --disable-up-arrow)";
 fi;
