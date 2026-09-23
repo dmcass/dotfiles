@@ -1,0 +1,16 @@
+[tools]
+dart = "latest"
+flutter = "latest"
+go = "latest"
+java = "lts"
+node = "lts"
+"npm:yarn" = "latest"
+python = "latest"
+ruby = "4.0.2"
+rust = "stable"
+usage = "latest"
+"npm:pnpm" = "latest"
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["node", "python", "ruby"]

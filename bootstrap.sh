@@ -1,26 +1,34 @@
 #!/usr/bin/env bash
+# Link the dotfiles in this repository into the home folder.
+# A file that is in the way is moved to ~/.dotfiles-backup/<time>/.
+# Usage: ./bootstrap.sh [--dry-run]
 
-cd "$(dirname "${BASH_SOURCE}")";
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+DOTFILES="$PWD"
+BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+DRY_RUN=false
+[ "${1:-}" = "--dry-run" ] && DRY_RUN=true
 
-git pull origin main;
+run() { if $DRY_RUN; then echo "would: $*"; else "$@"; fi; }
 
-function doIt() {
-    rsync --exclude ".git/" \
-        --exclude ".DS_Store" \
-        --exclude "bootstrap.sh" \
-        --exclude "README.md" \
-        --exclude "LICENSE-MIT.txt" \
-        -avh --no-perms . ~;
-    source ~/.bash_profile;
-}
+# Every tracked file, except the ones that are not home-folder dotfiles
+git ls-files | grep -vE '^(bootstrap\.sh|Brewfile.*|\.macos|README\.md|LICENSE-MIT\.txt|init/)|\.gitkeep$' |
+while read -r f; do
+    src="$DOTFILES/$f"
+    dst="$HOME/$f"
+    [ "$(readlink "$dst" 2>/dev/null)" = "$src" ] && continue
+    run mkdir -p "$(dirname "$dst")"
+    if [ -e "$dst" ] || [ -L "$dst" ]; then
+        run mkdir -p "$(dirname "$BACKUP/$f")"
+        run mv "$dst" "$BACKUP/$f"
+    fi
+    run ln -s "$src" "$dst"
+    $DRY_RUN || echo "linked $f"
+done
 
-if [ "$1" == "--force" -o "$1" == "-f" ]; then
-    doIt;
-else
-    read -p "This may overwrite existing files in your home directory. Are you sure? (y/n) " -n 1;
-    echo "";
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        doIt;
-    fi;
-fi;
-unset doIt;
+# Folders that .vimrc writes to
+run mkdir -p ~/.vim/backups ~/.vim/swaps ~/.vim/undo
+
+# GnuPG warns if its home folder is readable by others
+run chmod 700 ~/.gnupg
