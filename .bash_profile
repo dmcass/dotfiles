@@ -1,5 +1,6 @@
 # Add Homebrew to path
 eval $(/opt/homebrew/bin/brew shellenv);
+
 # Add `~/bin` to the `$PATH`
 export PATH="$HOME/bin:$PATH";
 
@@ -27,12 +28,13 @@ for option in autocd globstar; do
     shopt -s "$option" 2> /dev/null;
 done;
 
+# Shims first, so tools resolve in non-interactive shells and editors. Full
+# activation after, for [env] and the prompt hooks in interactive shells.
+eval "$(mise activate bash --shims)"
 eval "$(mise activate bash)"
 
 # Add tab completion for many Bash commands
 if type brew &>/dev/null; then
-    HOMBREW_PREFIX="$(brew --prefix)"
-
     if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
         source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
     else
@@ -43,6 +45,9 @@ if type brew &>/dev/null; then
 elif [ -f /etc/bash_completion ]; then
     source /etc/bash_completion;
 fi;
+
+# Add 1Password CLI tab completion
+command -v op &>/dev/null && source <(op completion bash);
 
 # Enable tab completion for `g` by marking it as an alias for `git`
 if type __git_complete &> /dev/null; then
@@ -57,4 +62,11 @@ fi;
 complete -W "NSGlobalDomain" defaults;
 
 # Add `killall` tab completion for common apps
-complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal Twitter" killall;
+complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Music Safari SystemUIServer Terminal" killall;
+
+# Add atuin for shell history
+if [ -f ~/.atuin/bin/env ]; then
+    source ~/.atuin/bin/env;
+    [ -f "$HOMEBREW_PREFIX/etc/profile.d/bash-preexec.sh" ] && source "$HOMEBREW_PREFIX/etc/profile.d/bash-preexec.sh";
+    eval "$(atuin init bash)";
+fi;
