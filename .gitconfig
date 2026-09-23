@@ -4,7 +4,7 @@
     l = log --pretty=format:'%C(magenta)%G? %C(auto)%h %d %s' -n 20 --graph --abbrev-commit
 
     # View abbreviated SHA, description, and history graph of the latest 20 commits.
-    lo = log --pretty=oneline -n 20 --graph --abrev-commit
+    lo = log --pretty=oneline -n 20 --graph --abbrev-commit
 
     # View the current working tree status using the short format.
     s = status -s
@@ -16,7 +16,10 @@
     d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
 
     # `git di $number` shows the diff between the state `$number` revisions ago and the current state.
-    di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+    di = !"di() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; di"
+
+    # Shorthand command for fetch
+    f = fetch
 
     # Pull in remote changes for the current repository and all its submodules.
     p = pull --recurse-submodules
@@ -30,11 +33,14 @@
     # Switch to a branch, creating it if necessary.
     go = "!f() { git switch -c \"$1\" 2> /dev/null || git switch \"$1\"; }; f"
 
-    # Shorthand command for checkout. Warns about using checkout instead of switch.
+    # Shorthand command for checkout. Warns about using checkout instead of switch or restore.
     co = "!f() { git checkout \"$@\"; echo \"\n $(tput setaf 1)Should you be using 'switch' or 'restore' instead?\"; }; f"
 
     # Shorthand command for switch.
     sw = switch
+
+    # Shorthand command for restore.
+    rs = restore
 
     # Show verbose output about tags, branches or remotes.
     tags = tag -l
@@ -77,6 +83,18 @@
 
     # Show the user email for the current repository.
     whoami = config user.email
+
+    # Show the name of the branch for the HEAD symbolic ref on origin
+    head = !git symbolic-ref --short refs/remotes/origin/HEAD | sed 's|^origin/||'
+
+    # Update the head branch and rebase the current branch onto it.
+    # rebase.autostash and pull.rebase keep uncommitted changes.
+    up = "!f() { \
+      CB=$(git branch --show-current); \
+      HB=$(git head); \
+      if [ \"$CB\" = \"$HB\" ]; then git p; \
+      else git fetch && git fetch -q . \"origin/$HB:$HB\" && git rebase \"$HB\"; fi; \
+    }; f"
 
 [apply]
 
@@ -144,6 +162,11 @@
     # https://help.github.com/articles/signing-commits-using-gpg/
     gpgSign = true
 
+[credential]
+
+    # Store HTTPS credentials in the macOS keychain.
+    helper = osxkeychain
+
 [diff]
 
     # Detect copies as well as renames.
@@ -167,10 +190,16 @@
     # Default to creating a merge commit when merging branches
     ff = no
 
+    # Automatically stash and pop changes when merging
+    autostash = true
+
 [fetch]
 
-    # Always prune branches and tags that have been deleted on remotes.
+    # Always prune branches that have been deleted on remotes.
     prune = true
+
+    # Always prune tags that have been deleted on remotes.
+    pruneTags = true
 
 [pull]
 
@@ -186,6 +215,13 @@
     default = simple
     # Make `git push` push relevant annotated tags when pushing branches out.
     followTags = true
+    # Automatically create remote branch and set as upstream if it doesn't exist.
+    autoSetupRemote = true
+
+[rebase]
+
+    # Automatically stash and pop changes when rebasing
+    autostash = true
 
 [gpg]
 
@@ -196,23 +232,17 @@
 [url "git@github.com:"]
 
     insteadOf = "gh:"
-    pushInsteadOf = "github:"
-    pushInsteadOf = "git://github.com/"
-
-[url "git://github.com/"]
-
-    insteadOf = "github:"
 
 [url "git@gist.github.com:"]
 
     insteadOf = "gst:"
-    pushInsteadOf = "gist:"
-    pushInsteadOf = "git://gist.github.com/"
-
-[url "git://gist.github.com/"]
-
-    insteadOf = "gist:"
 
 [init]
 
     defaultBranch = main
+
+# Machine-specific settings (user, signing key, work URLs). Not in the repository.
+# Last, so its values override the ones above.
+[include]
+
+    path = ~/.gitconfig.local
