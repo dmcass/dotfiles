@@ -1,111 +1,105 @@
 # Dustin’s dotfiles
 
-![Screenshot of my shell prompt](https://i.imgur.com/EkEtphC.png)
+![Screenshot of the shell prompt in a Git repository with one staged, one modified, and one untracked file](init/prompt.png)
 
-## Installation
+My Bash, Git, Vim, and macOS settings. They started as a fork of [Mathias Bynens’s dotfiles](https://github.com/mathiasbynens/dotfiles).
 
-**Warning:** If you want to give these dotfiles a try, you should first fork this repository, review the code, and remove things you don’t want or need. Don’t blindly use my settings unless you know what that entails. Use at your own risk!
+**Warning:** These settings are mine. If you want to try them, fork the repository and review the code first, and remove what you don’t want.
 
-### Using Git and the bootstrap script
+## Set up a new Mac
 
-You can clone the repository wherever you want. (I like to keep it in `~/Projects/dotfiles`, with `~/dotfiles` as a symlink.) The bootstrapper script will pull in the latest version and copy the files to your home folder.
+1. Install [Homebrew](https://brew.sh/).
 
-```bash
-git clone https://github.com/dmcass/dotfiles.git && cd dotfiles && source bootstrap.sh
-```
+1. Clone the repository. The Git settings expect personal repositories under `~/projects/personal/`:
 
-To update, `cd` into your local `dotfiles` repository and then:
+    ```bash
+    git clone https://github.com/dmcass/dotfiles.git ~/projects/personal/dotfiles
+    cd ~/projects/personal/dotfiles
+    ```
 
-```bash
-source bootstrap.sh
-```
+1. Install the Homebrew packages:
 
-Alternatively, to update while avoiding the confirmation prompt:
+    ```bash
+    brew bundle --file=Brewfile
+    ```
 
-```bash
-set -- -f; source bootstrap.sh
-```
+1. Make the Homebrew version of Bash your login shell:
 
-### Git-free install
+    ```bash
+    grep -qx "$(brew --prefix)/bin/bash" /etc/shells || echo "$(brew --prefix)/bin/bash" | sudo tee -a /etc/shells
+    chsh -s "$(brew --prefix)/bin/bash"
+    ```
 
-To install these dotfiles without Git:
+1. Link the dotfiles into your home folder. To see what changes first, add `--dry-run`:
 
-```bash
-cd; curl -#L https://github.com/dmcass/dotfiles/tarball/master | tar -xzv --strip-components 1 --exclude={README.md,bootstrap.sh,LICENSE-MIT.txt}
-```
+    ```bash
+    ./bootstrap.sh
+    ```
 
-To update later on, just run that command again.
+    The script links each tracked file into `~`. A file that is in the way moves to `~/.dotfiles-backup/`. The script doesn’t link `.macos`, the Brewfiles, `init/`, or this README.
 
-### Specify the `$PATH`
+1. Create the local files that hold settings for this Mac only. See [Local settings](#local-settings).
 
-If `~/.path` exists, it will be sourced along with the other files, before any feature testing (such as [detecting which version of `ls` is being used](https://github.com/dmcass/dotfiles/blob/master/.aliases#L23-29)) takes place.
+1. Optional: Apply the macOS defaults. Quit iTerm2 first, and run the script from Terminal. To also set the computer name, pass it as an argument:
 
-Here’s an example `~/.path` file that adds `/usr/local/bin` to the `$PATH`:
+    ```bash
+    ./.macos COMPUTER_NAME
+    ```
 
-```bash
-export PATH="/usr/local/bin:$PATH"
-```
+    Replace `COMPUTER_NAME` with the name for this Mac. Without an argument, the name doesn’t change.
 
-### Add custom commands without creating a new fork
+    The settings for Safari, Mail, and TextEdit apply only if Terminal has Full Disk Access. The script prints a warning if it doesn’t.
 
-If `~/.extra` exists, it will be sourced along with the other files. You can use this to add a few custom commands without the need to fork this entire repository, or to add commands you don’t want to commit to a public repository.
+## Update
 
-My `~/.extra` looks something like this:
+Because `~` links to the repository, `git pull` updates your settings. After a pull adds a file, run `./bootstrap.sh` again to link it.
 
-```bash
-# Git credentials
-# Not in the repository, to prevent people from accidentally committing under my name
-GIT_AUTHOR_NAME="Dustin Cass"
-GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-git config --global user.name "$GIT_AUTHOR_NAME"
-GIT_AUTHOR_EMAIL="dcass@example.com"
-GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-git config --global user.email "$GIT_AUTHOR_EMAIL"
-```
+## Local settings
 
-You could also use `~/.extra` to override settings, functions and aliases from my dotfiles repository. It’s probably better to [fork the original repository](https://github.com/mathiasbynens/dotfiles/fork) instead, though.
+These files aren’t in the repository. Each one is optional.
 
-### Sensible macOS defaults
+### `~/.path`
 
-When setting up a new Mac, you may want to set some sensible macOS defaults:
+Sourced first. Use it to extend `$PATH`.
 
 ```bash
-./.macos
+export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
 ```
 
-### Install Homebrew formulae
+### `~/.extra`
 
-When setting up a new Mac, you may want to install some common [Homebrew](https://brew.sh/) formulae (after installing Homebrew, of course):
+Sourced after the other shell files. Use it for aliases, functions, and exports that belong to one Mac or one employer. Don’t put secrets in it: load them when a command needs them, for example with `op read`.
 
 ```bash
-./brew.sh
+alias work="cd ~/projects/work"
+export EDITOR="code --wait"
 ```
 
-Some of the functionality of these dotfiles depends on formulae installed by `brew.sh`. If you don’t plan to run `brew.sh`, you should look carefully through the script and manually install any particularly important ones. A good example is Bash/Git completion: the dotfiles use a special version from Homebrew.
+### `~/.gitconfig.local`
 
-## Feedback
+Included at the end of `.gitconfig`. Put your Git identity, signing key, and work URL shorthands here.
 
-Suggestions/improvements
-[welcome](https://github.com/mathiasbynens/dotfiles/issues)!
+```ini
+[user]
+    name = YOUR_NAME
+    email = YOUR_EMAIL
+    signingkey = GPG_KEY_ID
 
-## Author
+[includeIf "gitdir:~/projects/personal/"]
+    path = ~/projects/personal/.gitconfig
+```
 
-| [![twitter/mathias](http://gravatar.com/avatar/24e08a9ea84deb17ae121074d0f17125?s=70)](http://twitter.com/mathias "Follow @mathias on Twitter") |
-|---|
-| [Mathias Bynens](https://mathiasbynens.be/) |
+Replace `YOUR_NAME`, `YOUR_EMAIL`, and `GPG_KEY_ID` with your own values. The `includeIf` section loads a second identity for repositories under `~/projects/personal/`.
 
-## Thanks to…
+## iTerm2 settings
 
-* @ptb and [his _macOS Setup_ repository](https://github.com/ptb/mac-setup)
-* [Ben Alman](http://benalman.com/) and his [dotfiles repository](https://github.com/cowboy/dotfiles)
-* [Cătălin Mariș](https://github.com/alrra) and his [dotfiles repository](https://github.com/alrra/dotfiles)
-* [Gianni Chiappetta](https://butt.zone/) for sharing his [amazing collection of dotfiles](https://github.com/gf3/dotfiles)
-* [Jan Moesen](http://jan.moesen.nu/) and his [ancient `.bash_profile`](https://gist.github.com/1156154) + [shiny _tilde_ repository](https://github.com/janmoesen/tilde)
-* Lauri ‘Lri’ Ranta for sharing [loads of hidden preferences](https://web.archive.org/web/20161104144204/http://osxnotes.net/defaults.html)
-* [Matijs Brinkhuis](https://matijs.brinkhu.is/) and his [dotfiles repository](https://github.com/matijs/dotfiles)
-* [Nicolas Gallagher](http://nicolasgallagher.com/) and his [dotfiles repository](https://github.com/necolas/dotfiles)
-* [Sindre Sorhus](https://sindresorhus.com/)
-* [Tom Ryder](https://sanctum.geek.nz/) and his [dotfiles repository](https://sanctum.geek.nz/cgit/dotfiles.git/about)
-* [Kevin Suttle](http://kevinsuttle.com/) and his [dotfiles repository](https://github.com/kevinSuttle/dotfiles) and [macOS-Defaults project](https://github.com/kevinSuttle/macOS-Defaults), which aims to provide better documentation for [`~/.macos`](https://mths.be/macos)
-* [Haralan Dobrev](https://hkdobrev.com/)
-* Anyone who [contributed a patch](https://github.com/mathiasbynens/dotfiles/contributors) or [made a helpful suggestion](https://github.com/mathiasbynens/dotfiles/issues)
+`init/iterm2.plist` holds the iTerm2 settings: profiles, color presets, and the hotkey window. It leaves out window positions and other state.
+
+- To save a change you made in iTerm2, run `init/iterm2-export.sh`, and commit `init/iterm2.plist`.
+- To load the settings, quit iTerm2 and run `init/iterm2-import.sh` from another terminal. `.macos` runs it for you.
+
+VS Code uses Settings Sync. `init/vscode-settings.json` is a copy of its settings for reference.
+
+## Thanks
+
+Based on [Mathias Bynens’s dotfiles](https://github.com/mathiasbynens/dotfiles) and the people he credits there.

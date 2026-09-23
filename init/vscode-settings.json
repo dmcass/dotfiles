@@ -1,11 +1,41 @@
 {
-    "base16.generator.activatedThemes": [
-        "base16-tomorrow-light",
-        "base16-tomorrow-night-dark"
-    ],
-    "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+    "[dockercompose]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.autoIndent": "advanced",
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[github-actions-workflow]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    },
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "aws.cloudformation.telemetry.enabled": false,
+    "aws.telemetry": false,
+    "base16.generator.activatedThemes": ["base16-tomorrow-light", "base16-tomorrow-night-dark"],
+    "chat.disableAIFeatures": true,
+    "claudeCode.preferredLocation": "panel",
+    "datadog.telemetry.setup.enableTelemetry": "disabled",
+    "datadog.timeRange.setup.timeFrame": "2d",
+    "docker.extension.enableComposeLanguageServer": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.fixAll.ts": "always"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.fontFamily": "'FiraCode Nerd Font', 'Fira Code', Menlo, Monaco, 'Courier New', monospace",
     "editor.fontLigatures": true,
-    "editor.fontSize": 11,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.guides.bracketPairs": "active",
+    "editor.pasteAs.enabled": false,
     "editor.renderWhitespace": "selection",
     "editor.rulers": [120],
     "editor.scrollBeyondLastLine": false,
@@ -38,24 +68,50 @@
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
     "git.mergeEditor": false,
-    "gitlens.codeLens.recentChange.enabled": false,
+    "git.openRepositoryInParentFolders": "never",
     "gitlens.codeLens.authors.enabled": false,
+    "gitlens.codeLens.recentChange.enabled": false,
     "gitlens.codeLens.scopes": ["document", "containers", "blocks"],
+    "gitlens.liveshare.enabled": false,
     "html.format.enable": false,
-    "java.errors.incompleteClasspath.severity": "ignore",
-    "javascript.format.enable": false,
-    "javascript.updateImportsOnFileMove.enabled": "never",
     "jest.runMode": "deferred",
+    "js/ts.format.enabled": false,
+    "js/ts.preferences.importModuleSpecifier": "non-relative",
+    "js/ts.preferences.preferTypeOnlyAutoImports": true,
+    "js/ts.tsdk.path": "~/.local/share/mise/installs/node/lts-iron/lib/node_modules/typescript/lib",
+    "js/ts.updateImportsOnFileMove.enabled": "never",
     "json.format.enable": false,
+    "liveshare.launcherClient": "visualStudioCode",
+    "makefile.configureOnOpen": false,
+    "oxc.typeAware": true,
+    "plantuml.server": "https://www.plantuml.com/plantuml",
     "react-native-tools.showUserTips": false,
     "redhat.telemetry.enabled": false,
     "search.globalFindClipboard": true,
-    "terminal.integrated.fontSize": 11,
-    "typescript.format.enable": false,
-    "typescript.tsdk": "~/.local/share/rtx/installs/node/lts-iron/lib/node_modules/typescript/lib",
-    "typescript.updateImportsOnFileMove.enabled": "never",
+    "security.promptForLocalFileProtocolHandling": false,
+    "vsicons.associations.files": [
+        {
+            "icon": "layout",
+            "extensions": ["layout.tsx", "_layout.tsx"],
+            "filename": true
+        },
+        {
+            "icon": "registry",
+            "extensions": ["vm.ts", "vm.tsx"]
+        }
+    ],
+    "vsicons.associations.folders": [
+        {
+            "icon": "component",
+            "extensions": ["_components"]
+        },
+        {
+            "icon": "api",
+            "extensions": ["fetcher", "fetchers", "_fetcher", "_fetchers"]
+        }
+    ],
     "vsicons.dontShowNewVersionMessage": true,
-    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "window.autoDetectColorScheme": true,
     "window.newWindowDimensions": "inherit",
     "window.restoreWindows": "all",
     "window.zoomLevel": 0,
@@ -107,13 +163,21 @@
         "!Split",
         "!Split sequence"
     ],
-    "[yaml]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "[markdown]": {
-        "files.trimTrailingWhitespace": false
-    },
-    "[python]": {
-        "editor.formatOnType": true
-    }
+    "yaml.disableSchemaDetection": [
+        "**/.github/workflows/*.yml",
+        "**/.github/workflows/*.yaml",
+        "**/.gitea/workflows/*.yml",
+        "**/.gitea/workflows/*.yaml",
+        "**/.forgejo/workflows/*.yml",
+        "**/.forgejo/workflows/*.yaml"
+    ],
+    "totalTypeScript.hiddenTips": [
+        "typing-function-parameters",
+        "function-return-type",
+        "basic-types",
+        "union-type",
+        "array-type",
+        "undefined-keyword",
+        "ts-object-type"
+    ]
 }
