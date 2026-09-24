@@ -1,7 +1,6 @@
 tap "bramstein/webfonttools"
 tap "domt4/autoupdate"
 tap "facebook/fb"
-tap "xcodesorg/made"
 
 # Shell and newer GNU and macOS tools
 brew "bash"
@@ -62,7 +61,7 @@ brew "bramstein/webfonttools/sfnt2woff"
 # Apple platform development
 brew "aria2" # xcodes uses it for faster downloads
 brew "watchman"
-brew "xcodesorg/made/xcodes"
+brew "xcodes"
 brew "facebook/fb/idb-companion"
 
 # Other languages
