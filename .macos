@@ -15,14 +15,6 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.macos` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# Settings for sandboxed apps (Safari, Mail, TextEdit) live in
-# ~/Library/Containers, which macOS protects. If the terminal can't read it,
-# the `defaults write` lines for those apps are unlikely to apply.
-if ! ls ~/Library/Containers/com.apple.Safari/Data/Library/Preferences &>/dev/null; then
-    echo "Warning: this terminal can't access app containers, so Safari, Mail, and TextEdit settings may not apply." >&2
-    echo "Grant it in System Settings → Privacy & Security → Full Disk Access, then run ./.macos again." >&2
-fi
-
 ###############################################################################
 # General UI/UX                                                               #
 ###############################################################################
@@ -434,10 +426,6 @@ defaults write com.apple.dock show-recents -bool false
 # Reset Launchpad, but keep the desktop wallpaper intact
 find "${HOME}/Library/Application Support/Dock" -name "*-*.db" -maxdepth 1 -delete
 
-# Add iOS & Watch Simulator to Launchpad
-sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
-sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
-
 # Add a spacer to the left side of the Dock (where the applications are)
 # defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
 # Add a spacer to the right side of the Dock (where the Trash is)
@@ -510,10 +498,12 @@ defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
 # Remove useless icons from Safari’s bookmarks bar
 defaults write com.apple.Safari ProxiesInBookmarksBar "()"
 
-# Enable the Develop menu and the Web Inspector in Safari
+# Enable the Develop menu and the Web Inspector in Safari. Without SandboxBroker's
+# ShowDevelopMenu, Safari resets IncludeDevelopMenu on launch. Quit Safari first.
+defaults write com.apple.Safari.SandboxBroker ShowDevelopMenu -bool true
 defaults write com.apple.Safari IncludeDevelopMenu -bool true
 defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+defaults write com.apple.Safari WebKitPreferences.developerExtrasEnabled -bool true
 
 # Add a context menu item for showing the Web Inspector in web views
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
