@@ -9,8 +9,13 @@ python = "latest"
 ruby = "4.0.2"
 rust = "stable"
 usage = "latest"
-"npm:pnpm" = "latest"
+pnpm = "latest"
+
+[env]
+# mise installs pnpm from package.json's packageManager; fail on a mismatch
+# instead of letting pnpm download its own copy into ~/Library/pnpm/.tools.
+pnpm_config_pm_on_fail = "error"
 
 [settings]
 experimental = true
-idiomatic_version_file_enable_tools = ["node", "python", "ruby"]
+idiomatic_version_file_enable_tools = ["node", "python", "ruby", "pnpm"]
